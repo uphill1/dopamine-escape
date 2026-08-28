@@ -1,4 +1,7 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
 import { GoalSelect } from "./goal-select";
 import { ReplanView, type PlanDay } from "./replan-view";
 
@@ -71,10 +74,16 @@ export default async function ReplanPage({
             밀린 계획을 남은 기간에 맞춰 다시 짜드려요.
           </p>
         </div>
-        <GoalSelect
-          goals={goalList.map((g) => ({ id: g.id, title: g.title }))}
-          selectedGoalId={defaultGoal.id}
-        />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" render={<Link href="/dashboard" />}>
+            <ArrowLeft />
+            대시보드
+          </Button>
+          <GoalSelect
+            goals={goalList.map((g) => ({ id: g.id, title: g.title }))}
+            selectedGoalId={defaultGoal.id}
+          />
+        </div>
       </div>
 
       <ReplanView
