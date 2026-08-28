@@ -71,3 +71,5 @@ Three separate client factories under `lib/supabase/`, matching the standard `@s
 - 한 번에 파일 3개 이상 건드리는 작업은 먼저 계획을 말할 것
 - 에러 처리는 toast 한 줄이면 충분
 - service_role 키는 서버 사이드에서만 사용
+- 기능 하나가 완성되고 동작 확인이 끝나면 커밋 후 push까지 진행할 것
+- 성능 측정이나 동작 확인 목적으로 LLM API를 반복 호출하지 말 것. 실제 호출은 사용자가 직접 수행한다. 측정이 필요하면 먼저 물어볼 것.
