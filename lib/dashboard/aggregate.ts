@@ -69,6 +69,12 @@ export function buildSummary({
 // ============================================================
 export type ReplanEffectPoint = { date: string } & Record<string, number | null | string>;
 
+// 이동평균 값(숫자)과 그날의 원본 status(문자열)를 한 point 안에 같이 담기 위한 키 규칙.
+// 툴팁에서 "이동평균 %"와 "그날 실제 상태"를 함께 보여줄 때 쓴다.
+export function statusKey(goalId: string) {
+  return `${goalId}__status`;
+}
+
 export type ReplanEffectResult = {
   series: ReplanEffectPoint[];
   goals: { id: string; title: string }[];
@@ -101,8 +107,18 @@ export function buildReplanEffectSeries(
   const series: ReplanEffectPoint[] = allDates.map((date) => {
     const point: ReplanEffectPoint = { date };
     for (const { goal, history } of perGoal) {
-      const row = history.find((d) => d.date === date);
-      point[goal.id] = row ? (row.status === "done" ? 100 : 0) : null;
+      const index = history.findIndex((d) => d.date === date);
+      if (index === -1) {
+        point[goal.id] = null;
+        point[statusKey(goal.id)] = null;
+        continue;
+      }
+      // 3일 이동평균: 해당 날짜와 그 전 최대 2일(총 최대 3일)의 done 비율.
+      // 시작 구간(1~2일차)은 그만큼의 창으로 계산 — 표준 trailing moving average.
+      const window = history.slice(Math.max(0, index - 2), index + 1);
+      const doneCount = window.filter((d) => d.status === "done").length;
+      point[goal.id] = Math.round((doneCount / window.length) * 100);
+      point[statusKey(goal.id)] = history[index].status;
     }
     return point;
   });

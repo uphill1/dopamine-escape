@@ -12,7 +12,7 @@ import {
   ReferenceArea,
   ResponsiveContainer,
 } from "recharts";
-import { formatMonthDay, type ReplanEffectResult } from "@/lib/dashboard/aggregate";
+import { formatMonthDay, statusKey, type ReplanEffectResult } from "@/lib/dashboard/aggregate";
 
 // 목표가 늘어나도 깨지지 않게 순환시키되, 첫 번째(스토리의 주인공, 보통 슬럼프가 있는 목표)는
 // 항상 초록 주색으로 강조하고 나머지는 회색 계열로 보조한다.
@@ -26,6 +26,8 @@ const TOOLTIP_STYLE = {
   fontSize: 12,
 };
 
+const STATUS_LABEL: Record<string, string> = { done: "완료", missed: "실패", pending: "예정" };
+
 function CustomTooltip({
   active,
   payload,
@@ -33,7 +35,7 @@ function CustomTooltip({
   goals,
 }: {
   active?: boolean;
-  payload?: { dataKey: string; value: number | null }[];
+  payload?: { dataKey: string; value: number | null; payload: Record<string, unknown> }[];
   label?: string;
   goals: { id: string; title: string }[];
 }) {
@@ -44,13 +46,15 @@ function CustomTooltip({
       {payload.map((p, i) => {
         const goal = goals.find((g) => g.id === p.dataKey);
         if (!goal || p.value === null) return null;
+        const status = p.payload[statusKey(goal.id)] as string | null;
         return (
           <p key={p.dataKey} className="flex items-center gap-1.5 text-muted-foreground">
             <span
               className="inline-block size-2 rounded-full"
               style={{ background: LINE_COLORS[i % LINE_COLORS.length] }}
             />
-            {goal.title}: <span className="font-medium text-foreground">{p.value === 100 ? "완료" : "실패"}</span>
+            {goal.title}: <span className="font-medium text-foreground">이동평균 {p.value}%</span>
+            {status && <span>· 그날 {STATUS_LABEL[status] ?? status}</span>}
           </p>
         );
       })}
@@ -123,7 +127,7 @@ export function ReplanEffectChart({ data }: { data: ReplanEffectResult }) {
             key={goal.id}
             dataKey={goal.id}
             name={goal.id}
-            type="monotone"
+            type="stepAfter"
             stroke={LINE_COLORS[i % LINE_COLORS.length]}
             strokeWidth={2}
             dot={{ r: 4, fill: LINE_COLORS[i % LINE_COLORS.length], stroke: "var(--card)", strokeWidth: 2 }}

@@ -122,7 +122,8 @@ export default async function DashboardPage() {
             )}
           </CardTitle>
           <CardDescription>
-            슬럼프(3일 연속 실패) 이후 재계획을 거치면 이행률이 다시 올라오는지 확인합니다.
+            3일 이동평균 기준 · 슬럼프(3일 연속 실패) 이후 재계획을 거치면 이행률이 다시
+            올라오는지 확인합니다.
           </CardDescription>
         </CardHeader>
         <CardContent>
