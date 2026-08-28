@@ -125,11 +125,11 @@ export function ReplanView({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {/* 지난 14일 타임라인 */}
-      <Card>
+      <Card className="[--card-spacing:--spacing(6)]">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-lg">
             <span>{goal.title}</span>
             <span className="text-xs font-normal text-muted-foreground">
               최근 {history.length}일
@@ -174,7 +174,7 @@ export function ReplanView({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
           >
-            <Card className="border-destructive/30 bg-destructive/5">
+            <Card className="border-destructive/30 bg-destructive/5 [--card-spacing:--spacing(5)]">
               <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-4">
                 <p className="text-sm font-medium">
                   {missedStreakDays}일 밀렸습니다. 앞으로 {REPLAN_WINDOW_DAYS}일 계획을 다시
@@ -225,7 +225,7 @@ export function ReplanView({
             transition={{ duration: 0.35 }}
             className="flex flex-col gap-4"
           >
-            <Card className="border-emerald-500/30 bg-emerald-500/5">
+            <Card className="border-emerald-500/30 bg-emerald-500/5 [--card-spacing:--spacing(5)]">
               <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-4">
                 <div className="flex items-center gap-2">
                   <Sparkles className="size-4 text-emerald-500" />

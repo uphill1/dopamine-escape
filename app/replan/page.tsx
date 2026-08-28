@@ -67,11 +67,11 @@ export default async function ReplanPage({
     : null;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-6 sm:p-8">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 p-6 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-xl font-semibold">재계획</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">재계획</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             밀린 계획을 남은 기간에 맞춰 다시 짜드려요.
           </p>
         </div>

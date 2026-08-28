@@ -54,11 +54,11 @@ export default async function DashboardPage() {
   const tokenSavings = buildTokenSavings(purposeStats);
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 p-6 sm:p-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 p-6 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-xl font-semibold">대시보드</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">대시보드</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             학습 루프가 실제로 도는지, 데이터로 보여드려요.
           </p>
         </div>
@@ -71,11 +71,11 @@ export default async function DashboardPage() {
       </div>
 
       {/* 요약 카드 4개 */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-        <Card>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+        <Card className="[--card-spacing:--spacing(5)]">
           <CardHeader>
             <CardDescription>총 학습 세션 · 집중 시간</CardDescription>
-            <CardTitle className="font-heading text-2xl">
+            <CardTitle className="font-heading text-3xl">
               {summary.totalFocusMinutes.toLocaleString()}분
             </CardTitle>
           </CardHeader>
@@ -84,10 +84,10 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="[--card-spacing:--spacing(5)]">
           <CardHeader>
             <CardDescription>알림 응답률</CardDescription>
-            <CardTitle className="font-heading text-2xl">
+            <CardTitle className="font-heading text-3xl">
               {(summary.nudgeResponseRate * 100).toFixed(1)}%
             </CardTitle>
           </CardHeader>
@@ -96,18 +96,18 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="[--card-spacing:--spacing(5)]">
           <CardHeader>
             <CardDescription>재계획 횟수</CardDescription>
-            <CardTitle className="font-heading text-2xl">{summary.maxReplannedCount}회</CardTitle>
+            <CardTitle className="font-heading text-3xl">{summary.maxReplannedCount}회</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">최대 재조정 횟수</CardContent>
         </Card>
 
-        <Card>
+        <Card className="[--card-spacing:--spacing(5)]">
           <CardHeader>
             <CardDescription>총 LLM 호출 수</CardDescription>
-            <CardTitle className="font-heading text-2xl">
+            <CardTitle className="font-heading text-3xl">
               {summary.totalModelCalls.toLocaleString()}회
             </CardTitle>
           </CardHeader>
@@ -116,9 +116,9 @@ export default async function DashboardPage() {
       </div>
 
       {/* 차트1: 재계획 효과 */}
-      <Card>
+      <Card className="[--card-spacing:--spacing(6)]">
         <CardHeader>
-          <CardTitle className="flex flex-wrap items-center justify-between gap-2">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-lg">
             <span>재계획 효과 — 계획 이행률 추이</span>
             {effect.inProgressDate && (
               <span className="text-xs font-normal text-muted-foreground">
@@ -136,11 +136,11 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* 차트2: 시간대별 알림 응답률 */}
-        <Card>
+        <Card className="[--card-spacing:--spacing(6)]">
           <CardHeader>
-            <CardTitle>시간대별 알림 응답률</CardTitle>
+            <CardTitle className="text-lg">시간대별 알림 응답률</CardTitle>
             <CardDescription>
               오전/밤 시간대가 오후보다 응답률이 높습니다 — 알림 타이밍 개인화의 근거입니다.
             </CardDescription>
@@ -151,9 +151,9 @@ export default async function DashboardPage() {
         </Card>
 
         {/* 차트3: 멀티 LLM 라우팅 */}
-        <Card>
+        <Card className="[--card-spacing:--spacing(6)]">
           <CardHeader>
-            <CardTitle>멀티 LLM 라우팅 — 용도별 비용 구조</CardTitle>
+            <CardTitle className="text-lg">멀티 LLM 라우팅 — 용도별 비용 구조</CardTitle>
             <CardDescription>
               호출이 가장 잦은 nudge가 토큰은 가장 적게 씁니다 — 용도별 벤더 라우팅의 근거입니다.
             </CardDescription>
