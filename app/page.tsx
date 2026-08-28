@@ -1,5 +1,5 @@
 import { ModeToggle } from "@/components/mode-toggle";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const supabaseConfigured =
@@ -45,19 +46,14 @@ export default function Home() {
                 : "미설정 (.env.local 확인 필요)"}
             </span>
           </p>
-          <Button
-            variant="secondary"
-            className="w-fit"
-            render={
-              <a
-                href="https://supabase.com/dashboard/project/_/settings/api"
-                target="_blank"
-                rel="noopener noreferrer"
-              />
-            }
+          <a
+            href="https://supabase.com/dashboard/project/_/settings/api"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(buttonVariants({ variant: "secondary" }), "w-fit")}
           >
             Supabase API 키 발급받기
-          </Button>
+          </a>
         </CardContent>
       </Card>
     </div>

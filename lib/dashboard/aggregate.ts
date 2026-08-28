@@ -273,3 +273,26 @@ export function buildPurposeStats(
     },
   );
 }
+
+// 전량을 plan purpose 모델(가장 비싼 모델)로만 호출했다면 썼을 토큰 vs 실제로 쓴 토큰을 비교해
+// 멀티 벤더 라우팅으로 아낀 비율을 계산한다.
+export function buildTokenSavings(stats: PurposeStat[]) {
+  const planStat = stats.find((s) => s.purpose === "plan");
+  if (!planStat || planStat.avgTokens === 0) return null;
+
+  const totalCalls = stats.reduce((sum, s) => sum + s.callCount, 0);
+  const actualTotalTokens = stats.reduce((sum, s) => sum + s.totalTokens, 0);
+  const hypotheticalTotalTokens = totalCalls * planStat.avgTokens;
+  if (hypotheticalTotalTokens === 0) return null;
+
+  const savingsPercent = Math.round(
+    ((hypotheticalTotalTokens - actualTotalTokens) / hypotheticalTotalTokens) * 1000,
+  ) / 10;
+
+  return {
+    modelName: planStat.modelName,
+    savingsPercent,
+    actualTotalTokens,
+    hypotheticalTotalTokens,
+  };
+}

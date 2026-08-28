@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { GoalSelect } from "./goal-select";
 import { ReplanView, type PlanDay } from "./replan-view";
+import { cn } from "@/lib/utils";
 
 export default async function ReplanPage({
   searchParams,
@@ -75,10 +76,10 @@ export default async function ReplanPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" render={<Link href="/dashboard" />}>
+          <Link href="/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
             <ArrowLeft />
             대시보드
-          </Button>
+          </Link>
           <GoalSelect
             goals={goalList.map((g) => ({ id: g.id, title: g.title }))}
             selectedGoalId={defaultGoal.id}

@@ -67,7 +67,7 @@ export function ReplanEffectChart({ data }: { data: ReplanEffectResult }) {
 
   return (
     <ResponsiveContainer width="100%" height={320}>
-      <LineChart data={series} margin={{ top: 12, right: 16, left: -8, bottom: 0 }}>
+      <LineChart data={series} margin={{ top: 20, right: 16, left: -8, bottom: 0 }}>
         <CartesianGrid vertical={false} stroke="var(--border)" />
         <XAxis
           dataKey="date"
@@ -87,7 +87,7 @@ export function ReplanEffectChart({ data }: { data: ReplanEffectResult }) {
         />
         <Tooltip content={<CustomTooltip goals={goals} />} />
         <Legend
-          verticalAlign="top"
+          verticalAlign="bottom"
           height={28}
           formatter={(value) => (
             <span className="text-xs text-muted-foreground">

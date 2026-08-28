@@ -109,7 +109,7 @@ export function NudgeResponseChart({
           strokeDasharray="4 4"
           label={{
             value: `평균 ${averageResponseRate}%`,
-            position: "insideBottomRight",
+            position: "insideTopLeft",
             fill: "var(--muted-foreground)",
             fontSize: 11,
           }}

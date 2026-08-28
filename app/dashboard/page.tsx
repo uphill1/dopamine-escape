@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { MODEL_RATIONALE } from "@/lib/llm/models";
 import {
   buildSummary,
   buildReplanEffectSeries,
   buildNudgeHourSeries,
   buildPurposeStats,
+  buildTokenSavings,
   formatMonthDay,
 } from "@/lib/dashboard/aggregate";
 import { ReplanEffectChart } from "./replan-effect-chart";
@@ -49,6 +51,7 @@ export default async function DashboardPage() {
   const effect = buildReplanEffectSeries(goalList, planDayList);
   const nudgeHours = buildNudgeHourSeries(nudgeList);
   const purposeStats = buildPurposeStats(modelCallList, MODEL_RATIONALE);
+  const tokenSavings = buildTokenSavings(purposeStats);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 p-6 sm:p-8">
@@ -59,10 +62,12 @@ export default async function DashboardPage() {
             학습 루프가 실제로 도는지, 데이터로 보여드려요.
           </p>
         </div>
-        <Button variant="secondary" render={<Link href="/replan" />}>
+        {/* Base UI Button은 render prop으로 링크를 감싸면 안 됨(네이티브 버튼 시맨틱 경고) —
+            buttonVariants를 Link에 직접 입혀서 버튼처럼 보이게만 스타일링한다. */}
+        <Link href="/replan" className={cn(buttonVariants({ variant: "secondary" }))}>
           재계획 페이지로 이동
           <ArrowRight />
-        </Button>
+        </Link>
       </div>
 
       {/* 요약 카드 4개 */}
@@ -154,6 +159,12 @@ export default async function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
+            {tokenSavings && (
+              <p className="rounded-md bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                전량 {tokenSavings.modelName} 사용 시 대비 약 {tokenSavings.savingsPercent}% 토큰
+                절감
+              </p>
+            )}
             <LlmRoutingChart stats={purposeStats} />
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {purposeStats.map((s) => (
