@@ -29,11 +29,23 @@ There is no test runner configured in this repo.
 // wrong (Radix pattern)
 <Button asChild><a href="...">Link</a></Button>
 
-// correct (Base UI pattern)
-<Button render={<a href="..." />}>Link</Button>
+// correct (Base UI pattern) — non-link elements only, e.g. a <div> trigger
+<Button render={<div />} nativeButton={false}>Custom tag</Button>
 ```
 
 This applies to `Button`, `DropdownMenuTrigger`, and any other primitive from `@base-ui/react` re-exported through `components/ui/*`. When adding new shadcn components, check the generated file for `render`/`Props` typing before assuming Radix conventions.
+
+**Exception — links styled as buttons**: never put `<a>`/`Link` through `Button`'s `render` prop. Base UI's `Button` defaults to `nativeButton={true}` and expects the rendered element to actually be a `<button>`; passing a link there logs a console warning, and Base UI's own docs say links have their own semantics and shouldn't be routed through `Button` at all. Instead, style the anchor directly with the exported `buttonVariants`:
+
+```tsx
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+<Link href="/replan" className={cn(buttonVariants({ variant: "secondary" }))}>
+  Go to replan
+</Link>
+```
 
 ### Dark mode
 
