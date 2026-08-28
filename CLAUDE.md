@@ -73,3 +73,4 @@ Three separate client factories under `lib/supabase/`, matching the standard `@s
 - service_role 키는 서버 사이드에서만 사용
 - 기능 하나가 완성되고 동작 확인이 끝나면 커밋 후 push까지 진행할 것
 - 성능 측정이나 동작 확인 목적으로 LLM API를 반복 호출하지 말 것. 실제 호출은 사용자가 직접 수행한다. 측정이 필요하면 먼저 물어볼 것.
+- 브랜치를 만들지 말 것. 항상 main에서 작업하고 main에 직접 커밋/푸시한다.
