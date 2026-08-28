@@ -1,6 +1,10 @@
 -- dopamine-escape: demo seed data
 -- 무작위(random()) 대신 전부 결정론적인 값/식으로 채워서, 재실행해도 항상 같은 그림이 나온다.
--- 스토리: 초반 4일 순항 -> 3일 연속 슬럼프(missed) -> 재계획(replanned_count 1) -> 회복.
+-- 스토리(토익): 초반 4일 순항 -> 3일 연속 슬럼프(missed) -> 1차 재계획(replanned_count 1) -> 회복
+--   -> 오늘(8/28) 직전 8/25~27 또 3일 연속 슬럼프(missed, 2차 슬럼프, 아직 재계획 안 함).
+--   /replan 데모는 이 2차 슬럼프를 감지해서 8/28~9/11 baseline(재계획 전 원안, replanned_count=1)을
+--   갈아엎어 replanned_count=2로 만드는 흐름을 보여준다. (재계획이 "한 번으로 끝나는 이벤트"가 아니라
+--   반복될 수 있는 루프라는 것을 replanned_count로 드러내는 게 포인트.)
 -- 재실행 가능하도록 관련 테이블을 먼저 비운다 (FK 관계상 이 순서로 지정하면 CASCADE 없이도 안전).
 truncate table model_calls, sessions, nudges, tasks, plan_days, goals, programs;
 
@@ -24,7 +28,9 @@ begin
 
   -- ============================================================
   -- plan_days: 최근 14일 (2026-08-15 ~ 2026-08-28, 오늘 포함) x 2 goals
-  -- 1~4일차 done / 5~7일차 missed(슬럼프 3연속) / 8일차부터 재계획(replanned_count=1)+done(회복) / 14일차(오늘) pending
+  -- 1~4일차 done / 5~7일차 missed(슬럼프 3연속) / 8일차부터 재계획(replanned_count=1)+done(회복)
+  -- 토익만: 11~13일차(8/25~27)에 2차 슬럼프(missed 3연속, 아직 미해결) / 14일차(오늘) pending
+  -- 정보처리기사는 회복 후 그대로 순항 (별도 재계획 데모 대상 아님).
   -- ============================================================
   insert into plan_days (goal_id, date, planned_minutes, status, replanned_count)
   values
@@ -38,9 +44,9 @@ begin
     (v_goal_toeic, date '2026-08-22', 45, 'done', 1),
     (v_goal_toeic, date '2026-08-23', 60, 'done', 1),
     (v_goal_toeic, date '2026-08-24', 60, 'done', 1),
-    (v_goal_toeic, date '2026-08-25', 60, 'done', 1),
-    (v_goal_toeic, date '2026-08-26', 75, 'done', 1),
-    (v_goal_toeic, date '2026-08-27', 60, 'done', 1),
+    (v_goal_toeic, date '2026-08-25', 60, 'missed', 1),
+    (v_goal_toeic, date '2026-08-26', 75, 'missed', 1),
+    (v_goal_toeic, date '2026-08-27', 60, 'missed', 1),
     (v_goal_toeic, date '2026-08-28', 60, 'pending', 1),
 
     (v_goal_jsis, date '2026-08-15', 90, 'done', 0),
@@ -165,6 +171,33 @@ begin
   join plan_days pd
     on pd.date = v.date
    and pd.goal_id = case v.goal_key when 'toeic' then v_goal_toeic else v_goal_jsis end;
+
+  -- ============================================================
+  -- plan_days (토익, 미래 baseline): 8/29~9/11 14일, "재계획 전 원안".
+  -- 8/22 1차 재계획 때 남은 기간 전체를 한 번에 잡아둔 것으로 간주해 replanned_count=1로 시작.
+  -- planned_minutes 60분 고정 — /replan API가 2차 슬럼프(8/25~27)를 감지해서 이 구간을 갈아엎고
+  -- replanned_count=2로 올리는 것이 데모의 핵심 흐름. status는 전부 pending(아직 도래 전).
+  -- ============================================================
+  insert into plan_days (goal_id, date, planned_minutes, status, replanned_count)
+  select v_goal_toeic, gs.d::date, 60, 'pending', 1
+  from generate_series(date '2026-08-29', date '2026-09-11', interval '1 day') as gs(d);
+
+  -- tasks: 4개 태스크 풀을 날짜 오프셋 기준 2개씩 순환 배정 (random() 없이 결정론적)
+  insert into tasks (plan_day_id, title, est_minutes, status, completed_at)
+  select idx.id, pool.title, pool.est_minutes, 'pending', null
+  from (
+    select id, row_number() over (order by date) - 1 as rn
+    from plan_days
+    where goal_id = v_goal_toeic and date between date '2026-08-29' and date '2026-09-11'
+  ) idx
+  cross join (
+    values
+      (0, '토익 파트5 문법 5문항', 5),
+      (1, '리스닝 파트2 10문제', 10),
+      (2, '단어 30개 암기', 8),
+      (3, '파트7 지문 1개 풀이', 12)
+  ) as pool(slot, title, est_minutes)
+  where pool.slot = idx.rn % 4 or pool.slot = (idx.rn + 1) % 4;
 
   -- ============================================================
   -- nudges: ~64건. 아침(9~11시)/밤(9~11시) 슬롯은 응답률 높게, 오후(2~4시) 슬롯은 낮게.
@@ -327,7 +360,8 @@ begin
     from programs
   ) p;
 
-  -- purpose='decompose': plan_day 하루당 1건 (28건), MODELS.DECOMPOSE, 각 날짜 06:30 발생
+  -- purpose='decompose': plan_day 하루당 1건 (42건 = 과거 14일×2목표 + 토익 미래 baseline 14일),
+  -- MODELS.DECOMPOSE, 각 날짜 06:30 발생
   insert into model_calls (purpose, model_name, input_tokens, output_tokens, credits, latency_ms, created_at)
   select
     'decompose',
