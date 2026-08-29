@@ -63,6 +63,14 @@ export default async function PlanPage({
     tasks: (tasksByDay.get(d.id) ?? []).map((t) => ({ title: t.title, estMinutes: t.est_minutes })),
   }));
 
+  // D-day는 클라이언트 기기 시계에 맡기지 않고 서버(KST 기준)에서 계산해 PlanView에 내려준다.
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+  const remainingDaysToTarget = Math.round(
+    (new Date(`${goal.target_date}T00:00:00Z`).getTime() -
+      new Date(`${today}T00:00:00Z`).getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 p-6 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -77,7 +85,7 @@ export default async function PlanPage({
           대시보드
         </Link>
       </div>
-      <PlanView goalId={goal.id} days={days} />
+      <PlanView goalId={goal.id} days={days} remainingDaysToTarget={remainingDaysToTarget} />
     </div>
   );
 }

@@ -20,7 +20,15 @@ function formatDate(date: string) {
   return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
 }
 
-export function PlanView({ goalId, days }: { goalId: string; days: DayPlan[] }) {
+export function PlanView({
+  goalId,
+  days,
+  remainingDaysToTarget,
+}: {
+  goalId: string;
+  days: DayPlan[];
+  remainingDaysToTarget: number;
+}) {
   const [comment, setComment] = useState(DEFAULT_COMMENT);
 
   useEffect(() => {
@@ -34,6 +42,12 @@ export function PlanView({ goalId, days }: { goalId: string; days: DayPlan[] }) 
 
   return (
     <div className="flex flex-col gap-4">
+      <p className="text-xs text-muted-foreground">
+        D-{remainingDaysToTarget} · 우선 2주 상세 계획부터 시작해요.
+        <br />
+        2주 뒤 실제 진행을 반영해 다음 구간을 다시 짭니다.
+      </p>
+
       <Card className="border-primary/30 bg-primary/5 [--card-spacing:--spacing(5)]">
         <CardContent className="flex items-center gap-2 pt-4">
           <Sparkles className="size-4 text-primary" />
