@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { Check, Circle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MODELS } from "@/lib/llm/models";
+import { cn } from "@/lib/utils";
 
 const EXAMPLE_CHIPS = [
   "토익 800점 10월 12일까지",
@@ -16,15 +17,23 @@ const EXAMPLE_CHIPS = [
   "오픽 IH 12월까지",
 ];
 
-// 1·2단계는 타이머로 넘기지만 3단계("계획을 정리하는 중")는 API 응답이 올 때까지
-// 그대로 유지한다 — claude-opus-5 호출이 20초 안팎 걸려서 고정 타이머로 3단계를
-// 다 넘기면 응답을 기다리는 동안 빈 화면처럼 보인다.
-const LOADING_STAGES = [
-  "목표를 이해하는 중",
-  `${MODELS.PLAN}가 D-day를 역산하는 중`,
-  "계획을 정리하는 중",
+// 실제 흐름: opus(PLAN)가 14일 계획을 만든 뒤(15~20초) gpt-5.5(DECOMPOSE)가 첫날만
+// 마이크로 분해한다(app/api/plan/route.ts) — 순차 호출이라 opus가 끝나야 gpt-5.5가
+// 시작된다. 그래서 1→2단계는 짧게, 2→3단계는 opus 완료 시점에 맞춰 12초 이상 길게 잡는다.
+// 마지막 4단계("계획을 정리하는 중")는 API 응답이 올 때까지 그대로 유지한다 — 고정 타이머로
+// 넘겨버리면 응답을 기다리는 동안 빈 화면처럼 보인다.
+// model이 있는 단계는 모델명을 문장과 분리해 렌더링 — 데모 영상에서 20초간 노출되는
+// 구간이라 모델명이 눈에 띄게 읽혀야 한다.
+const LOADING_STAGES: { label: string; model?: string }[] = [
+  { label: "목표를 이해하는 중" },
+  { label: "가 D-day를 역산하는 중", model: MODELS.PLAN },
+  { label: "가 오늘 할 일을 쪼개는 중", model: MODELS.DECOMPOSE },
+  { label: "계획을 정리하는 중" },
 ];
-const STAGE_INTERVAL_MS = 3500;
+// 각 단계로 넘어가기까지의 지연(직전 단계로부터의 상대 시간). 0→1: 짧게,
+// 1→2: opus가 실제로 끝나는 시점(15~20초)에 맞춰 12초 이상, 2→3: gpt-5.5는
+// maxTokens를 낮게 잡아 빠르게 끝나므로 다시 짧게.
+const STAGE_DELAYS_MS = [2000, 14000, 4000];
 
 export function OnboardingView() {
   const router = useRouter();
@@ -41,8 +50,12 @@ export function OnboardingView() {
 
     setStatus("loading");
     setStage(0);
-    const t1 = setTimeout(() => setStage(1), STAGE_INTERVAL_MS);
-    const t2 = setTimeout(() => setStage(2), STAGE_INTERVAL_MS * 2);
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    let elapsedMs = 0;
+    STAGE_DELAYS_MS.forEach((delay, i) => {
+      elapsedMs += delay;
+      timeouts.push(setTimeout(() => setStage(i + 1), elapsedMs));
+    });
 
     try {
       const res = await fetch("/api/plan", {
@@ -64,27 +77,57 @@ export function OnboardingView() {
       toast.error(err instanceof Error ? err.message : "계획 생성에 실패했습니다.");
       setStatus("idle");
     } finally {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      timeouts.forEach(clearTimeout);
     }
   }
 
   if (status === "loading") {
     return (
-      <Card className="w-full">
-        <CardContent className="flex items-center gap-3 pt-4 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin shrink-0" />
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={stage}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.2 }}
-            >
-              {LOADING_STAGES[stage]}...
-            </motion.span>
-          </AnimatePresence>
+      <Card className="w-full [--card-spacing:--spacing(5)]">
+        <CardContent className="flex flex-col gap-3.5 pt-4">
+          {LOADING_STAGES.map((s, i) => {
+            const state = i < stage ? "done" : i === stage ? "active" : "pending";
+            return (
+              <motion.div
+                key={i}
+                className="flex items-center gap-3"
+                animate={{ opacity: state === "pending" ? 0.4 : 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.span
+                  key={state}
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.25 }}
+                  className="flex size-6 shrink-0 items-center justify-center"
+                >
+                  {state === "done" && <Check className="size-4.5 text-primary" />}
+                  {state === "active" && <Loader2 className="size-4.5 animate-spin text-primary" />}
+                  {state === "pending" && <Circle className="size-2 fill-muted-foreground/40 text-muted-foreground/40" />}
+                </motion.span>
+                <span
+                  className={cn(
+                    "transition-colors duration-300",
+                    state === "active" && "text-base font-semibold text-primary",
+                    state !== "active" && "text-sm text-muted-foreground",
+                  )}
+                >
+                  {s.model && (
+                    <span
+                      className={cn(
+                        "mr-1 font-mono",
+                        state === "active" ? "text-primary" : "text-foreground/70",
+                      )}
+                    >
+                      {s.model}
+                    </span>
+                  )}
+                  {s.label}
+                  {state === "active" && "..."}
+                </span>
+              </motion.div>
+            );
+          })}
         </CardContent>
       </Card>
     );

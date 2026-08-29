@@ -48,10 +48,10 @@ export function PlanView({
         2주 뒤 실제 진행을 반영해 다음 구간을 다시 짭니다.
       </p>
 
-      <Card className="border-primary/30 bg-primary/5 [--card-spacing:--spacing(5)]">
+      <Card className="bg-primary [--card-spacing:--spacing(5)]">
         <CardContent className="flex items-center gap-2 pt-4">
-          <Sparkles className="size-4 text-primary" />
-          <p className="text-sm font-medium">{comment}</p>
+          <Sparkles className="size-4 text-primary-foreground" />
+          <p className="text-sm font-medium text-primary-foreground">{comment}</p>
         </CardContent>
       </Card>
 

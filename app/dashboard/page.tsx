@@ -85,12 +85,14 @@ export default async function DashboardPage() {
 
       {/* 요약 카드 6개 — 회복 서사·누적 시간(동기부여) + 기존 4개 */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
-        <Card className="[--card-spacing:--spacing(5)]">
+        <Card className="bg-primary [--card-spacing:--spacing(5)]">
           <CardHeader>
-            <CardDescription>회복 서사</CardDescription>
-            <CardTitle className="font-heading text-3xl">{comebackHeadline}</CardTitle>
+            <CardDescription className="text-primary-foreground/70">회복 서사</CardDescription>
+            <CardTitle className="font-heading text-4xl text-primary-foreground">
+              {comebackHeadline}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-xs text-muted-foreground">{comebackDetail}</CardContent>
+          <CardContent className="text-xs text-primary-foreground/80">{comebackDetail}</CardContent>
         </Card>
 
         <Card className="[--card-spacing:--spacing(5)]">

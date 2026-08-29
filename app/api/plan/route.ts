@@ -17,6 +17,31 @@ const SEED_USER_ID = "11111111-1111-1111-1111-111111111111";
 const PLAN_WINDOW_DAYS = 14;
 const MAX_DAILY_MINUTES = 180;
 
+// 첫날 태스크만 gpt-5.5로 마이크로 분해할 때 쓰는 스키마. minItems/maxItems는 게이트웨이의
+// strict json_schema가 지원하지 않아 400이 나므로 절대 넣지 않는다.
+const DECOMPOSE_SCHEMA = {
+  name: "decompose_result",
+  schema: {
+    type: "object",
+    properties: {
+      tasks: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            est_minutes: { type: "integer" },
+          },
+          required: ["title", "est_minutes"],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ["tasks"],
+    additionalProperties: false,
+  },
+} as const;
+
 const PLAN_SCHEMA = {
   name: "plan_result",
   schema: {
@@ -114,6 +139,52 @@ ${PLAN_WINDOW_DAYS} 중 작은 값만큼만 일일 계획(days)을 만들어.
 
   if (!parsed?.days || parsed.days.length === 0) {
     return NextResponse.json({ ok: false, error: "계획 생성에 실패했습니다." }, { status: 500 });
+  }
+
+  // 첫날(가장 이른 날짜)의 태스크만 gpt-5.5로 마이크로 분해해서 "지금 바로 시작할 수 있는"
+  // 크기로 쪼갠다. 14일 전체를 분해하면 지연이 폭증하므로 반드시 1일치만.
+  // 실패해도 계획 생성 전체가 실패하면 안 되므로 실패 시 opus가 만든 원래 태스크를 그대로 쓴다.
+  const firstDay = [...parsed.days].sort((a, b) => a.date.localeCompare(b.date))[0];
+
+  if (firstDay) {
+    try {
+      const decomposeSystemPrompt = `너는 오늘 계획의 태스크를 "지금 바로 시작할 수 있는" 크기로 쪼개는 코치야.
+
+아래 오늘 계획(planned_minutes, tasks)을 받아서 2~4개의 마이크로 태스크로 다시 나눠.
+- 각 태스크의 est_minutes는 5~20 사이.
+- est_minutes 합계는 planned_minutes를 넘지 않아야 해.
+- 첫 번째 태스크는 가장 가볍고 시작하기 쉬운 것으로 둬 — 시작 마찰을 낮추는 게 목적이야.
+- 제목만 봐도 뭘 하는지 알 수 있게 구체적으로 적어.`;
+
+      const decomposeResult = await callLLM({
+        purpose: "DECOMPOSE",
+        messages: [
+          { role: "system", content: decomposeSystemPrompt },
+          {
+            role: "user",
+            content: JSON.stringify({
+              planned_minutes: firstDay.planned_minutes,
+              tasks: firstDay.tasks,
+            }),
+          },
+        ],
+        schema: DECOMPOSE_SCHEMA,
+        // 태스크 2~4개짜리 짧은 출력이라 기본값(16000)은 과함. 다만 게이트웨이 추론 모델은
+        // max_tokens가 너무 낮으면 빈 응답을 내는 사례가 있어 2000으로만 낮춘다.
+        maxTokens: 2000,
+      });
+
+      const decomposeParsed = decomposeResult.parsed as {
+        tasks: { title: string; est_minutes: number }[];
+      } | null;
+
+      if (decomposeParsed?.tasks && decomposeParsed.tasks.length > 0) {
+        // parsed.days의 원소와 같은 참조라 여기서 바꾸면 아래 tasksByDate 구성에도 그대로 반영된다.
+        firstDay.tasks = decomposeParsed.tasks;
+      }
+    } catch (err) {
+      console.error("[api/plan] DECOMPOSE 실패, opus 원본 태스크로 진행", err);
+    }
   }
 
   const supabase = createAdminClient();

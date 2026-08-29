@@ -265,18 +265,18 @@ export function ReplanView({
                     <Card size="sm" className={cn(changed && "ring-1 ring-primary/40")}>
                       <CardContent className="flex flex-wrap items-center justify-between gap-2 pt-3 text-sm">
                         <span className="w-12 shrink-0 font-medium">{formatDate(day.date)}</span>
-                        <span className="flex items-center gap-1.5 text-xs">
+                        <span className="flex items-center gap-2">
                           {changed ? (
                             <>
-                              <span className="text-muted-foreground line-through">
+                              <span className="text-[10px] text-muted-foreground/50 line-through">
                                 {beforeDay.plannedMinutes}분
                               </span>
-                              <span className="font-medium text-primary">
+                              <span className="text-2xl leading-none font-bold tabular-nums text-primary">
                                 {day.plannedMinutes}분
                               </span>
                             </>
                           ) : (
-                            <span className="text-muted-foreground">{day.plannedMinutes}분</span>
+                            <span className="text-xs text-muted-foreground">{day.plannedMinutes}분</span>
                           )}
                         </span>
                         <span className="flex-1 basis-full text-xs text-muted-foreground sm:basis-auto">
