@@ -4,6 +4,10 @@ import { MODELS } from "@/lib/llm/models";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
+// Vercel 기본 함수 타임아웃(10초)보다 claude-opus-5 호출(20초 안팎)이 길어서
+// 배포 환경에서만 빈 응답/타임아웃이 나는 것을 막기 위한 설정.
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 // 실제 벽시계 날짜 대신 데이터 기반으로 "오늘"을 정의한다: 해당 목표의 plan_days 중
 // status가 아직 'pending'인 가장 이른 날짜 = 아직 확정되지 않은 첫 날 = "오늘".
@@ -42,8 +46,6 @@ const REPLAN_SCHEMA = {
       summary_comment: { type: "string" },
       days: {
         type: "array",
-        minItems: 1,
-        maxItems: REPLAN_WINDOW_DAYS,
         items: {
           type: "object",
           properties: {

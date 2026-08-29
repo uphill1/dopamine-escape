@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 // 예: 프로그램 매칭 화면 추가 시 → { href: "/programs", label: "프로그램 매칭" }
 const NAV_LINKS = [
   { href: "/", label: "홈" },
+  { href: "/onboarding", label: "목표 만들기" },
   { href: "/dashboard", label: "대시보드" },
   { href: "/replan", label: "재계획" },
   { href: "/ritual", label: "리추얼" },

@@ -3,6 +3,9 @@ import { callLLM } from "@/lib/llm/client";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+// Vercel 기본 함수 타임아웃보다 LLM 호출이 길어질 수 있어 배포 환경 빈 응답을 막기 위한 설정.
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 // ritual/replan 페이지와 동일한 규칙: 별도 goalId 없이 토익 목표를 기본값으로 사용.
 async function fetchTodayTask() {
