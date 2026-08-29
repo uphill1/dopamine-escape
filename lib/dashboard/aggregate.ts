@@ -65,6 +65,63 @@ export function buildSummary({
 }
 
 // ============================================================
+// 요약 카드 추가: 회복 서사 + 누적 시간
+// ============================================================
+
+// 목표별 plan_days를 날짜순으로 봤을 때 "2일 이상 연속 missed" 구간의 개수(슬럼프)와,
+// 그 구간 이후에 done이 다시 나온 적 있는 구간의 개수(돌아온 횟수)를 센다.
+// 이 서비스의 차별점("밀려도 다시 돌아온다")을 숫자로 보여주는 지표라 별도 함수로 둔다.
+export type ComebackStats = { slumpCount: number; comebackCount: number };
+
+export function buildComebackStats(planDays: PlanDayRow[]): ComebackStats {
+  const goalIds = Array.from(new Set(planDays.map((d) => d.goal_id)));
+
+  let slumpCount = 0;
+  let comebackCount = 0;
+  for (const goalId of goalIds) {
+    const rows = planDays
+      .filter((d) => d.goal_id === goalId)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    for (const run of findMissedRunIndices(rows, 2)) {
+      slumpCount += 1;
+      const cameBack = rows.slice(run.endIndex + 1).some((d) => d.status === "done");
+      if (cameBack) comebackCount += 1;
+    }
+  }
+
+  return { slumpCount, comebackCount };
+}
+
+// findMissedRuns와 같은 규칙(연속 missed 구간)이지만, 구간 "이후"를 들여다봐야 해서
+// 날짜 문자열이 아니라 인덱스 쌍을 반환한다.
+function findMissedRunIndices(rows: PlanDayRow[], minLength: number) {
+  const runs: { startIndex: number; endIndex: number }[] = [];
+  let runStart: number | null = null;
+  rows.forEach((d, i) => {
+    if (d.status === "missed") {
+      if (runStart === null) runStart = i;
+    } else if (runStart !== null) {
+      if (i - runStart >= minLength) runs.push({ startIndex: runStart, endIndex: i - 1 });
+      runStart = null;
+    }
+  });
+  if (runStart !== null && rows.length - runStart >= minLength) {
+    runs.push({ startIndex: runStart, endIndex: rows.length - 1 });
+  }
+  return runs;
+}
+
+// 누적 학습 시간 — 밀린 날이 있어도 줄어들지 않는, 계속 쌓이기만 하는 숫자.
+export type CumulativeStudyStats = { totalMinutes: number; totalHours: number };
+
+export function buildCumulativeStudyStats(sessions: SessionRow[]): CumulativeStudyStats {
+  const totalMinutes = sessions.reduce((sum, s) => sum + (s.focus_minutes ?? 0), 0);
+  const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
+  return { totalMinutes, totalHours };
+}
+
+// ============================================================
 // 차트1: 재계획 효과
 // ============================================================
 export type ReplanEffectPoint = { date: string } & Record<string, number | null | string>;

@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { MODEL_RATIONALE } from "@/lib/llm/models";
 import {
   buildSummary,
+  buildComebackStats,
+  buildCumulativeStudyStats,
   buildReplanEffectSeries,
   buildNudgeHourSeries,
   buildPurposeStats,
@@ -52,6 +54,17 @@ export default async function DashboardPage() {
   const nudgeHours = buildNudgeHourSeries(nudgeList);
   const purposeStats = buildPurposeStats(modelCallList, MODEL_RATIONALE);
   const tokenSavings = buildTokenSavings(purposeStats);
+  const comeback = buildComebackStats(planDayList);
+  const cumulative = buildCumulativeStudyStats(sessionList);
+
+  const comebackHeadline =
+    comeback.slumpCount === 0 ? "아직 없어요" : `${comeback.comebackCount}번`;
+  const comebackDetail =
+    comeback.slumpCount === 0
+      ? "밀린 구간이 없어요 — 지금처럼만 쭉 가요"
+      : comeback.comebackCount === comeback.slumpCount
+        ? `${comeback.slumpCount}번 밀렸지만 ${comeback.slumpCount}번 다 돌아왔어요`
+        : `${comeback.slumpCount}번 밀린 것 중 ${comeback.comebackCount}번 돌아왔어요`;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 p-6 sm:p-8">
@@ -70,8 +83,30 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {/* 요약 카드 4개 */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+      {/* 요약 카드 6개 — 회복 서사·누적 시간(동기부여) + 기존 4개 */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+        <Card className="[--card-spacing:--spacing(5)]">
+          <CardHeader>
+            <CardDescription>회복 서사</CardDescription>
+            <CardTitle className="font-heading text-3xl">{comebackHeadline}</CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-muted-foreground">{comebackDetail}</CardContent>
+        </Card>
+
+        <Card className="[--card-spacing:--spacing(5)]">
+          <CardHeader>
+            <CardDescription>누적 학습 시간</CardDescription>
+            <CardTitle className="font-heading text-3xl">
+              {cumulative.totalHours.toLocaleString()}시간
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-muted-foreground">
+            {cumulative.totalMinutes === 0
+              ? "첫 세션을 시작하면 여기 쌓여요"
+              : "밀려도 줄지 않고 계속 쌓인 시간이에요"}
+          </CardContent>
+        </Card>
+
         <Card className="[--card-spacing:--spacing(5)]">
           <CardHeader>
             <CardDescription>총 학습 세션 · 집중 시간</CardDescription>
