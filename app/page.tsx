@@ -33,14 +33,16 @@ const SCREENS = [
 
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-16 px-6 py-16 sm:px-8">
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-12 px-6 py-10 sm:px-8 sm:py-12">
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 text-center">
         <div>
           <h1 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            알림 하나로 시작하는, 끊기지 않는 학습 루프
+            계획이 밀려도, 다시 시작하게
           </h1>
           <p className="mt-3 text-base text-muted-foreground">
-            목표를 적으면 14일 계획으로 바꿔드려요. 계획이 밀려도 다시 짜고, 알림이 실행을 트리거합니다.
+            목표를 적으면 우선 2주 계획부터 짜드려요.
+            <br />
+            밀리면 다시 짜고, 알림이 실행을 트리거합니다.
           </p>
         </div>
         <OnboardingView />
@@ -51,7 +53,10 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {SCREENS.map(({ href, icon: Icon, title, description }) => (
             <Link key={href} href={href} className="group block h-full">
-              <Card size="sm" className="h-full transition-colors group-hover:border-primary/40 group-hover:bg-primary/[0.03]">
+              <Card
+                size="sm"
+                className="h-full transition-all duration-200 group-hover:-translate-y-1 group-hover:border-primary/40 group-hover:bg-primary/[0.03] group-hover:shadow-md"
+              >
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className={cn("flex size-7 items-center justify-center rounded-md bg-primary/15 text-primary")}>

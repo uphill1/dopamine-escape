@@ -72,7 +72,7 @@ export default async function PlanPage({
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 p-6 sm:p-8">
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5 p-6 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">

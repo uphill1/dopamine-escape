@@ -67,7 +67,7 @@ export default async function DashboardPage() {
         : `${comeback.slumpCount}번 밀린 것 중 ${comeback.comebackCount}번 돌아왔어요`;
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 p-6 sm:p-8">
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-5 p-6 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">대시보드</h1>
