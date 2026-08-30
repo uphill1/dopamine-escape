@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -159,6 +160,19 @@ export function RitualView({
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* 마스코트 차차 — 화면 중앙 하단, 장식용. 부모의 grayscale 필터를 그대로 상속받아
+          채도 전환과 같은 타이밍/이징으로 함께 복원된다. */}
+      <div className="pointer-events-none absolute bottom-24 left-1/2 -translate-x-1/2 sm:bottom-28">
+        <Image
+          src="/mascot/chacha-default.png"
+          alt="컴백 차차 마스코트 차차"
+          width={363}
+          height={600}
+          className="h-24 w-auto opacity-90 sm:h-28"
+          priority
+        />
+      </div>
 
       {/* 건너뛰기 — 강제하지 않되 유도: 아주 작고 흐리게 */}
       {stage === "breathing" && (

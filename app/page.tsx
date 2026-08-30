@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Bell, LayoutDashboard, RefreshCw, Wind } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,15 @@ export default function Home() {
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-12 px-6 py-10 sm:px-8 sm:py-12">
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 text-center">
         <div>
+          {/* 마스코트 차차 — 인사, 히어로 장식용으로 작게 */}
+          <Image
+            src="/mascot/chacha-hello.png"
+            alt="인사하는 차차"
+            width={382}
+            height={420}
+            className="mx-auto mb-2 h-14 w-auto sm:h-16"
+            priority
+          />
           <h1 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
             계획이 밀려도, 다시 시작하게
           </h1>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Check, Circle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -85,6 +86,21 @@ export function OnboardingView() {
     return (
       <Card className="w-full [--card-spacing:--spacing(5)]">
         <CardContent className="flex flex-col gap-3.5 pt-4">
+          {/* 마스코트 차차 — 진행 표시 위에 작게, 은은한 bounce만 */}
+          <motion.div
+            className="mx-auto"
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Image
+              src="/mascot/chacha-joy.png"
+              alt="즐거워하는 차차"
+              width={293}
+              height={320}
+              className="h-10 w-auto"
+              priority
+            />
+          </motion.div>
           {LOADING_STAGES.map((s, i) => {
             const state = i < stage ? "done" : i === stage ? "active" : "pending";
             return (

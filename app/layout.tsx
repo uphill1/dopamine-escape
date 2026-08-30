@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 // Pretendard는 Google Fonts에 없어 공식 배포 CDN에서 가변 폰트를 받아 로컬로 서빙한다
 // (public/fonts/PretendardVariable.woff2). 별도 npm 패키지 추가 없음.
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <SiteHeader />
           {children}
+          <SiteFooter />
           <Toaster />
         </ThemeProvider>
       </body>
