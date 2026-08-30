@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { href: "/replan", label: "재계획" },
   { href: "/ritual", label: "3분 디톡스" },
   { href: "/nudge", label: "알림" },
+  { href: "/system", label: "시스템" },
 ];
 
 // /ritual은 호흡 유도 + 컬러 리빌로 이어지는 몰입 화면이라 헤더를 아예 숨긴다.
