@@ -8,7 +8,7 @@ import { Check, Circle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { MODELS } from "@/lib/llm/models";
 import { cn } from "@/lib/utils";
 
@@ -151,17 +151,17 @@ export function OnboardingView() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="flex gap-2">
-        <Input
+      <div className="flex flex-col gap-2">
+        {/* 최소 3줄, 내용이 길어지면 최대 10줄까지 자동으로 늘어남(field-sizing-content) —
+            Enter는 줄바꿈, 제출은 버튼으로만 (강의계획서처럼 긴 텍스트 붙여넣기 대응) */}
+        <Textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSubmit();
-          }}
           placeholder="예: 토익 800점 10월까지 준비하고 싶어"
-          className="h-14 text-base sm:text-lg"
+          rows={3}
+          className="max-h-64 resize-none overflow-y-auto text-base sm:text-lg"
         />
-        <Button size="lg" className="h-14 shrink-0" onClick={handleSubmit}>
+        <Button size="lg" className="self-end" onClick={handleSubmit}>
           계획 만들기
         </Button>
       </div>
