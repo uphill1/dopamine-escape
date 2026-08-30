@@ -20,7 +20,7 @@ const SCREENS = [
   {
     href: "/ritual",
     icon: Wind,
-    title: "리추얼",
+    title: "3분 디톡스",
     description: "3분 호흡으로 시작 마찰을 낮추고 바로 몰입해요.",
   },
   {

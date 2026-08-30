@@ -53,7 +53,7 @@ export default async function RitualPage({
   // 빈 화면 금지 — 오늘 태스크를 못 찾으면 그럴듯한 더미로 대체
   const task = todayTask ?? { title: "토익 파트5 5문항", estMinutes: 15 };
 
-  // 리추얼 완료 후 CTA도 같은 목표 맥락을 유지하도록 ?goal 값을 실어 보낸다
+  // 3분 디톡스 완료 후 CTA도 같은 목표 맥락을 유지하도록 ?goal 값을 실어 보낸다
   const ctaHref = defaultGoal ? `/dashboard?goal=${defaultGoal.id}` : "/dashboard";
 
   return <RitualView task={task} fast={fast} ctaHref={ctaHref} />;

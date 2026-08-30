@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { href: "/onboarding", label: "목표 만들기" },
   { href: "/dashboard", label: "대시보드" },
   { href: "/replan", label: "재계획" },
-  { href: "/ritual", label: "리추얼" },
+  { href: "/ritual", label: "3분 디톡스" },
   { href: "/nudge", label: "알림" },
 ];
 
