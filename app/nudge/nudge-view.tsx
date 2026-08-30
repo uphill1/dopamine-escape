@@ -8,8 +8,7 @@ import { Sparkles } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// 데모용 임시 브랜드명 — 실제 이름이 정해지면 여기 한 곳만 고치면 됨.
-const APP_NAME = "도파민 탈출";
+const APP_NAME = "컴백 차차";
 
 const LOCK_SCREEN_TIME = "9:41";
 const LOCK_SCREEN_DATE = "8월 29일 토요일";

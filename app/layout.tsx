@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "dopamine-escape",
-  description: "Next.js 15 + TypeScript + Tailwind + shadcn/ui + Supabase",
+  title: "컴백 차차",
+  description: "계획이 밀려도, 다시 시작하게 — 컴백 차차",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
