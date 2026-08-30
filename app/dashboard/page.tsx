@@ -86,22 +86,24 @@ export default async function DashboardPage() {
 
       {/* 요약 카드 6개 — 회복 서사·누적 시간(동기부여) + 기존 4개 */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
-        <Card className="relative overflow-hidden bg-primary [--card-spacing:--spacing(5)]">
+        <Card className="bg-primary [--card-spacing:--spacing(5)]">
           <CardHeader>
             <CardDescription className="text-primary-foreground/70">회복 서사</CardDescription>
             <CardTitle className="font-heading text-4xl text-primary-foreground">
               {comebackHeadline}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pr-16 text-xs text-primary-foreground/80">{comebackDetail}</CardContent>
-          {/* 마스코트 차차 — 환영, 카드 안에 들어가는 장식 크기 */}
-          <Image
-            src="/mascot/chacha-welcome.png"
-            alt="환영하는 차차"
-            width={357}
-            height={420}
-            className="pointer-events-none absolute right-2 bottom-2 h-16 w-auto opacity-95"
-          />
+          <CardContent className="flex items-center justify-between gap-3">
+            <p className="text-xs text-primary-foreground/80">{comebackDetail}</p>
+            {/* 마스코트 차차 — 환영, 카드 높이의 상당 부분을 차지하되 텍스트와 겹치지 않게 flex로 배치 */}
+            <Image
+              src="/mascot/chacha-welcome.png"
+              alt="환영하는 차차"
+              width={357}
+              height={420}
+              className="h-24 w-auto shrink-0"
+            />
+          </CardContent>
         </Card>
 
         <Card className="[--card-spacing:--spacing(5)]">

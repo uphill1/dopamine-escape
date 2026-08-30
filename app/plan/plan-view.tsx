@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export type DayPlan = {
@@ -49,8 +49,14 @@ export function PlanView({
       </p>
 
       <Card className="bg-primary [--card-spacing:--spacing(5)]">
-        <CardContent className="flex items-center gap-2 pt-4">
-          <Sparkles className="size-4 text-primary-foreground" />
+        <CardContent className="flex items-center gap-3 pt-4">
+          <Image
+            src="/mascot/chacha-welcome.png"
+            alt="환영하는 차차"
+            width={357}
+            height={420}
+            className="h-20 w-auto shrink-0 sm:h-24"
+          />
           <p className="text-sm font-medium text-primary-foreground">{comment}</p>
         </CardContent>
       </Card>

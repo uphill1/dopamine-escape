@@ -97,7 +97,7 @@ export function OnboardingView() {
               alt="즐거워하는 차차"
               width={293}
               height={320}
-              className="h-10 w-auto"
+              className="h-[60px] w-auto"
               priority
             />
           </motion.div>

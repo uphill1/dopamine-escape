@@ -43,7 +43,7 @@ export default function Home() {
             alt="인사하는 차차"
             width={382}
             height={420}
-            className="mx-auto mb-2 h-14 w-auto sm:h-16"
+            className="mx-auto mb-2 h-24 w-auto sm:h-32"
             priority
           />
           <h1 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
